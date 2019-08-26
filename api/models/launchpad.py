@@ -22,6 +22,7 @@ class LaunchpadSchema(Schema):
     full_name = fields.String()
     status = fields.String()
 
+    # This decorated method is used by marshmallow for deserialization into our Launchpad class
     @post_load
     def make_user(self, data, **kwargs):
         return Launchpad(**data)
