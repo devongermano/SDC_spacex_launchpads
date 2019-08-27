@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.response_class = CustomResponse
 
 # Grab the values from the config file and add them to app.config
-app.config.from_pyfile("config/app.conf")
+app.config.from_pyfile("config/config.py")
 
 # Get the launchpad blueprint
 app.register_blueprint(launchpad, url_prefix='/api/launchpads')
