@@ -7,7 +7,7 @@ from api.models import LaunchpadSchema
 from api.services import LaunchpadServiceBase
 
 """ A Flask blueprint that contains the views used for launchpad information,
-    blueprints are cool, because they provide a way to modularize views in Flask"""
+    blueprints are cool, because they provide a way to modularize views in Flask """
 
 launchpad = Blueprint('launchpad', __name__)
 logger = logging.getLogger()

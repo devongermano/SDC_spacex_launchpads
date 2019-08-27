@@ -11,7 +11,6 @@ from api.models import LaunchpadSchema, Launchpad
 from api.services import LaunchpadServiceBase
 
 
-
 """ A class that inherits from our python abstract base class LaunchpadServiceBase,
     we can replace LaunchpadServiceHttp later with something like LaunchpadServiceDB
     in our dependency injector, and everything will be dandy. """
@@ -37,15 +36,14 @@ class LaunchpadServiceHttp(LaunchpadServiceBase):
             logging.error(error)
             abort(make_response(jsonify(message="The SpaceX API returned an unexpected response."), 502))
 
-        """Marshmallow handles the validation of the objects we received from SpaceX,
-        # verify the data matches the schema and return that as a list our Launchpad class"""
+        """ Marshmallow handles the validation of the objects we received from SpaceX,
+            verify the data matches the schema and return that as a list our Launchpad class """
         try:
             result = LaunchpadSchema(many=True).load(launchpad_data)
         except ValidationError as error:
             logging.error(error)
             abort(make_response(jsonify(message="The data returned from the SpaceX API was JSON, but it did not "
                                                 "conform to the Launchpad Type."), 502))
-            return None
 
         return result
 
@@ -55,10 +53,11 @@ class LaunchpadServiceHttp(LaunchpadServiceBase):
         found_launchpad = None
         for launchpad in launchpads:
             if launchpad.padid == padid:
-                print(launchpad.padid)
                 found_launchpad = launchpad
 
         if not found_launchpad:
-            abort(make_response(jsonify(message="No launchpad found."), 204))
+            error_message = f'No launchpad found for id: {padid}'
+            logging.info(error_message)
+            abort(make_response(jsonify(message=error_message), 204))
 
         return found_launchpad
