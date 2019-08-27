@@ -1,4 +1,10 @@
+from json import JSONDecodeError
+
+import flask
 import requests
+from flask import abort, make_response
+from flask.json import jsonify
+from marshmallow import ValidationError
 
 from api.models import LaunchpadSchema
 from api.services import LaunchpadServiceBase
@@ -10,22 +16,29 @@ from api.services import LaunchpadServiceBase
 
 class LaunchpadServiceHttp(LaunchpadServiceBase):
 
-    def __init__(self, app_context):
-        self.app_context = app_context
+    def __init__(self, app_config: flask.Config):
+        self.app_config = app_config
 
     def get_launchpads(self):
         # Get launchpad data from the SpaceX API
 
-        endpoint = self.app_context.config.get("SPACEX_HTTP_ENDPOINT")
+        endpoint = self.app_config.get("SPACEX_HTTP_ENDPOINT")
 
-        launchpad_data = requests.get(endpoint + 'v2/launchpads').json()
-
-        # many=true is used to pass collections
-        schema = LaunchpadSchema(many=True)
+        launchpad_data = None
+        try:
+            launchpad_data = requests.get(endpoint + 'v2/launchpads').json()
+        except (requests.exceptions.RequestException, JSONDecodeError) as error:
+            print(error)
+            abort(make_response(jsonify(message="The SpaceX API returned an unexpected response."), 502))
 
         # Marshmallow handles the validation of the objects we received from SpaceX,
         # verify the data matches the schema and return that as a list our Launchpad class
-        result = schema.load(launchpad_data)
+        try:
+            result = LaunchpadSchema(many=True).load(launchpad_data)
+        except ValidationError as error:
+            print(error)
+            abort(make_response(jsonify(message="The data returned from the SpaceX API was JSON, but it did not "
+                                                "conform to the Launchpad Type."), 502))
+            return None
 
-        # Return a list of launchpads with the fields from the schema
-        return schema.dumps(result)
+        return result

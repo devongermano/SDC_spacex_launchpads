@@ -3,7 +3,7 @@
 ### How do I test it?
 We use pytest as our testing framework... You can test the project by running:
 
-`python3 -m pytest`
+`pytest`
 
 ### How do I run it?
 Serverless can emulate an AWS lambda environment locally, you can run the project locally by running:
