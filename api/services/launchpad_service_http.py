@@ -7,7 +7,7 @@ from flask.json import jsonify
 from marshmallow import ValidationError
 from json import JSONDecodeError
 
-from api.models import LaunchpadSchema
+from api.models import LaunchpadSchema, Launchpad
 from api.services import LaunchpadServiceBase
 
 
@@ -48,3 +48,17 @@ class LaunchpadServiceHttp(LaunchpadServiceBase):
             return None
 
         return result
+
+    def get_launchpad_by_id(self, padid: int) -> Launchpad:
+        launchpads = self.get_launchpads()
+
+        found_launchpad = None
+        for launchpad in launchpads:
+            if launchpad.padid == padid:
+                print(launchpad.padid)
+                found_launchpad = launchpad
+
+        if not found_launchpad:
+            abort(make_response(jsonify(message="No launchpad found."), 204))
+
+        return found_launchpad

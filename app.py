@@ -23,7 +23,7 @@ app.config.from_pyfile("config/config.py")
 app.response_class = CustomResponse
 
 # Get the launchpad blueprint
-app.register_blueprint(launchpad, url_prefix='/api/launchpads')
+app.register_blueprint(launchpad, url_prefix='/api/launchpad')
 
 # Inject services
 FlaskInjector(app=app, modules=[configure])
